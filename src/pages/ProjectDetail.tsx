@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, ArrowRight, MapPin, Calendar, Building2, User, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useProjectDetail, useProjectsAPI } from "@/hooks/useProjectsAPI"
-import Lightbox from "@/components/common/Lightbox";
+import Lightbox from "@/components/common/Lightbox"
 import { useState } from "react"
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
@@ -15,23 +15,20 @@ const ProjectDetail = () => {
   const { projects: allProjects } = useProjectsAPI()
 
   // Lightbox state
-  // const [lightboxOpen, setLightboxOpen] = useState(false);
-  // const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [showAllImages, setShowAllImages] = useState(false)
 
   // Gallery images - using same image for demo, in production use different images
-  // const galleryImages = [
-  //   currentProject.image,
-  //   currentProject.image,
-  //   currentProject.image,
-  //   currentProject.image,
-  //   currentProject.image,
-  //   currentProject.image,
-  // ];
+  const galleryImages = currentProject?.gallery || []
 
-  // const openLightbox = (index: number) => {
-  //   setCurrentImageIndex(index);
-  //   setLightboxOpen(true);
-  // };
+  const openLightbox = (index: number) => {
+    setCurrentImageIndex(index)
+    setLightboxOpen(true)
+  }
+
+  // ✅ Helper to get full image URL safely
+  const getImageURL = (imagePath) => (imagePath ? `${BASE_URL}${imagePath}` : "/placeholder.svg")
 
   if (loading) {
     return (
@@ -54,19 +51,11 @@ const ProjectDetail = () => {
     )
   }
 
-  const currentIndex = allProjects.findIndex(
-    (p) => (p._id || p.id) === (currentProject._id || currentProject.id)
-  )
+  const currentIndex = allProjects.findIndex((p) => (p._id || p.id) === (currentProject._id || currentProject.id))
   const prevProject = currentIndex > 0 ? allProjects[currentIndex - 1] : null
-  const nextProject =
-    currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : null
-
-  // ✅ Helper to get full image URL safely
-  const getImageURL = (imagePath) =>
-    imagePath ? `${BASE_URL}${imagePath}` : "/placeholder.svg"
+  const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : null
 
   return (
-    // <div className="min-h-screen pt-24">
     <div className="min-h-screen pt-">
       {/* Sidebar Navigation */}
       <div className="fixed left-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-4">
@@ -83,12 +72,7 @@ const ProjectDetail = () => {
 
         {prevProject && (
           <Link to={`/projects/${prevProject._id || prevProject.id}`}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full"
-              title="Previous Project"
-            >
+            <Button variant="ghost" size="icon" className="w-12 h-12 rounded-full" title="Previous Project">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
@@ -96,12 +80,7 @@ const ProjectDetail = () => {
 
         {nextProject && (
           <Link to={`/projects/${nextProject._id || nextProject.id}`}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full"
-              title="Next Project"
-            >
+            <Button variant="ghost" size="icon" className="w-12 h-12 rounded-full" title="Next Project">
               <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
@@ -111,7 +90,7 @@ const ProjectDetail = () => {
       {/* ✅ Hero Image */}
       <section className="relative h-[70vh] overflow-hidden">
         <img
-          src={getImageURL(currentProject.imagePath)}
+          src={getImageURL(currentProject.imagePath) || "/placeholder.svg"}
           alt={currentProject.title}
           className="w-full h-full object-cover"
         />
@@ -119,12 +98,8 @@ const ProjectDetail = () => {
 
         <div className="absolute bottom-0 left-0 right-0 container-fluid pb-12">
           <div className="max-w-4xl">
-            <p className="text-primary text-sm uppercase tracking-widest mb-4">
-              {currentProject.category} Project
-            </p>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              {currentProject.title}
-            </h1>
+            <p className="text-primary text-sm uppercase tracking-widest mb-4">{currentProject.category} Project</p>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">{currentProject.title}</h1>
           </div>
         </div>
       </section>
@@ -135,7 +110,7 @@ const ProjectDetail = () => {
           {/* Left: Image */}
           <div className="relative aspect-[4/3] overflow-hidden hover-lift">
             <img
-              src={currentProject.image}
+              src={currentProject.image || "/placeholder.svg"}
               alt={currentProject.title}
               className="w-full h-full object-cover"
             />
@@ -144,12 +119,8 @@ const ProjectDetail = () => {
           {/* Right: Details */}
           <div className="space-y-8">
             <div>
-              <p className="text-primary text-sm uppercase tracking-widest mb-4">
-                {currentProject.category} Project
-              </p>
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                {currentProject.title}
-              </h1>
+              <p className="text-primary text-sm uppercase tracking-widest mb-4">{currentProject.category} Project</p>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">{currentProject.title}</h1>
               <p className="text-xl text-muted-foreground flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
                 {currentProject.location}
@@ -163,7 +134,8 @@ const ProjectDetail = () => {
                   <span className="text-sm">Services Provided</span>
                 </div>
                 <p className="font-semibold">
-                  Structural Engineering, Project Management Consultancy, Civil Engineering, Earth and Water retaining structures
+                  Structural Engineering, Project Management Consultancy, Civil Engineering, Earth and Water retaining
+                  structures
                 </p>
               </div>
 
@@ -246,59 +218,59 @@ const ProjectDetail = () => {
                 `This ${currentProject.category.toLowerCase()} project in ${currentProject.location} represents a significant achievement in structural engineering.`}
             </p>
 
-            <h3 className="text-2xl font-bold mb-4 mt-12">
-              Engineering Challenges
-            </h3>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              {currentProject.engineeringChallenges}
-            </p>
+            <h3 className="text-2xl font-bold mb-4 mt-12">Engineering Challenges</h3>
+            <p className="text-muted-foreground leading-relaxed mb-6">{currentProject.engineeringChallenges}</p>
 
-            <h3 className="text-2xl font-bold mb-4 mt-12">
-              Technical Solutions
-            </h3>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              {currentProject.technicalSolutions}
-            </p>
+            <h3 className="text-2xl font-bold mb-4 mt-12">Technical Solutions</h3>
+            <p className="text-muted-foreground leading-relaxed mb-6">{currentProject.technicalSolutions}</p>
 
             <h3 className="text-2xl font-bold mb-4 mt-12">Results</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {currentProject.results}
-            </p>
+            <p className="text-muted-foreground leading-relaxed">{currentProject.results}</p>
           </div>
         </div>
       </section>
 
       {/* Project Gallery */}
-      {/* <section className="py-16 bg-muted/30">
-        <div className="container-fluid">
-          <div className="mb-12">
-            <p className="text-primary text-sm uppercase tracking-widest mb-4">Gallery</p>
-            <h2 className="text-4xl md:text-5xl font-bold">Project at a Glance</h2>
-          </div>
+      {galleryImages.length > 0 && (
+        <section className="py-16 bg-muted/30">
+          <div className="container-fluid">
+            <div className="mb-12">
+              <p className="text-primary text-sm uppercase tracking-widest mb-4">Gallery</p>
+              <h2 className="text-4xl md:text-5xl font-bold">Project at a Glance</h2>
+            </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryImages.map((image, index) => (
-              <div
-                key={index}
-                className="relative aspect-[4/3] overflow-hidden group cursor-pointer hover-lift"
-                onClick={() => openLightbox(index)}
-                style={{
-                  animation: `fade-in-up 0.5s ease-out ${index * 0.1}s both`,
-                }}
-              >
-                <img
-                  src={image}
-                  alt={`${currentProject.title} - Image ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                  <p className="text-sm font-medium">View Full Image</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {(showAllImages ? galleryImages : galleryImages.slice(0, 8)).map((imagePath, index) => (
+                <div
+                  key={index}
+                  className="relative aspect-[4/3] overflow-hidden group cursor-pointer hover-lift"
+                  onClick={() => openLightbox(index)}
+                  style={{
+                    animation: `fade-in-up 0.5s ease-out ${index * 0.1}s both`,
+                  }}
+                >
+                  <img
+                    src={getImageURL(imagePath) || "/placeholder.svg"}
+                    alt={`${currentProject.title} - Image ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                    <p className="text-sm font-medium">View Full Image</p>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {galleryImages.length > 8 && !showAllImages && (
+              <div className="flex justify-center mt-8">
+                <Button variant="outline" onClick={() => setShowAllImages(true)}>
+                  View More ({galleryImages.length - 8} more images)
+                </Button>
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      </section> */}
+        </section>
+      )}
 
       {/* ✅ Navigation - Previous/Next Projects */}
       <section className="py-16 border-t border-border/50">
@@ -311,7 +283,7 @@ const ProjectDetail = () => {
               >
                 <div className="absolute inset-0">
                   <img
-                    src={getImageURL(prevProject.imagePath)}
+                    src={getImageURL(prevProject.imagePath) || "/placeholder.svg"}
                     alt={prevProject.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -323,9 +295,7 @@ const ProjectDetail = () => {
                     <ArrowLeft className="h-4 w-4" />
                     Previous Project
                   </p>
-                  <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">
-                    {prevProject.title}
-                  </h3>
+                  <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">{prevProject.title}</h3>
                 </div>
               </Link>
             )}
@@ -337,7 +307,7 @@ const ProjectDetail = () => {
               >
                 <div className="absolute inset-0">
                   <img
-                    src={getImageURL(nextProject.imagePath)}
+                    src={getImageURL(nextProject.imagePath) || "/placeholder.svg"}
                     alt={nextProject.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -349,9 +319,7 @@ const ProjectDetail = () => {
                     Next Project
                     <ArrowRight className="h-4 w-4" />
                   </p>
-                  <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">
-                    {nextProject.title}
-                  </h3>
+                  <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">{nextProject.title}</h3>
                 </div>
               </Link>
             )}
@@ -359,13 +327,9 @@ const ProjectDetail = () => {
         </div>
       </section>
 
-      {/* {lightboxOpen && (
-        <Lightbox
-          images={galleryImages}
-          currentIndex={currentImageIndex}
-          onClose={() => setLightboxOpen(false)}
-        />
-      )} */}
+      {lightboxOpen && (
+        <Lightbox images={galleryImages} currentIndex={currentImageIndex} onClose={() => setLightboxOpen(false)} />
+      )}
     </div>
   )
 }

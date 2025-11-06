@@ -14,6 +14,7 @@ import AdminBlogs from "@/components/admin/AdminBlogs"
 import AdminMessages from "@/components/admin/AdminMessages"
 import AdminApplications from "@/components/admin/AdminApplications"
 import AdminStats from "@/components/admin/AdminStats"
+import AdminJobOpenings from "@/components/admin/AdminJobOpenings"
 
 const AdminDashboard = () => {
   const { admin } = useSelector((state: RootState) => state.auth)
@@ -35,7 +36,7 @@ const AdminDashboard = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <div className="bg-card border-b border-border px-8 py-4 flex items-center justify-between">
-          <div>         
+          <div>
             <h1 className="text-2xl font-bold">Admin Panel</h1>
             <p className="text-sm text-muted-foreground">Welcome back, {admin?.username}</p>
           </div>
@@ -48,7 +49,7 @@ const AdminDashboard = () => {
         {/* Content Area */}
         <div className="flex-1 overflow-auto p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="overview" className="gap-2">
                 <BarChart3 className="w-4 h-4" />
                 <span className="hidden sm:inline">Overview</span>
@@ -60,6 +61,10 @@ const AdminDashboard = () => {
               <TabsTrigger value="blogs" className="gap-2">
                 <FileText className="w-4 h-4" />
                 <span className="hidden sm:inline">Blogs</span>
+              </TabsTrigger>
+              <TabsTrigger value="jobs" className="gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span className="hidden sm:inline">Jobs</span>
               </TabsTrigger>
               <TabsTrigger value="messages" className="gap-2">
                 <Mail className="w-4 h-4" />
@@ -81,6 +86,10 @@ const AdminDashboard = () => {
 
             <TabsContent value="blogs">
               <AdminBlogs />
+            </TabsContent>
+
+            <TabsContent value="jobs">
+              <AdminJobOpenings />
             </TabsContent>
 
             <TabsContent value="messages">

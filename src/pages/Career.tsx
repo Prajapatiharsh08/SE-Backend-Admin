@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState, useEffect } from "react"
 
 import { Briefcase, Users, TrendingUp, CheckCircle2, Heart, Award, Target } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -10,70 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import heroStructure3 from "@/assets/hero-structure-3.jpg"
 import aboutBlueprint from "@/assets/about-blueprint.jpg"
-import { useState } from "react"
 import { SuccessAnimation } from "@/components/common/SuccessAnimation"
-
-const openings = [
-  {
-    title: "Senior Structural Engineer",
-    department: "Engineering",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    salary: "$120k - $160k",
-    description: "Lead complex structural design projects for commercial and residential developments.",
-  },
-  {
-    title: "Bridge Design Engineer",
-    department: "Infrastructure",
-    location: "New York, NY",
-    type: "Full-time",
-    salary: "$100k - $140k",
-    description: "Specialized role focusing on bridge and highway infrastructure projects.",
-  },
-  {
-    title: "Seismic Analysis Specialist",
-    department: "Engineering",
-    location: "Los Angeles, CA",
-    type: "Full-time",
-    salary: "$110k - $150k",
-    description: "Expert in earthquake engineering and seismic retrofitting of existing structures.",
-  },
-  {
-    title: "Project Manager - Industrial",
-    department: "Project Management",
-    location: "Chicago, IL",
-    type: "Full-time",
-    salary: "$90k - $130k",
-    description: "Manage industrial facility projects from concept through completion.",
-  },
-  {
-    title: "Structural Designer",
-    department: "Engineering",
-    location: "Seattle, WA",
-    type: "Full-time",
-    salary: "$80k - $110k",
-    description: "Create detailed structural drawings and calculations for diverse projects.",
-  },
-  {
-    title: "Engineering Intern",
-    department: "Engineering",
-    location: "Multiple Locations",
-    type: "Internship",
-    salary: "$25/hour",
-    description: "Gain hands-on experience working alongside senior engineers on real projects.",
-  },
-]
-
-const benefits = [
-  "Competitive salary and performance bonuses",
-  "Comprehensive health insurance (medical, dental, vision)",
-  "401(k) retirement plan with company match",
-  "Professional development and training programs",
-  "Flexible work arrangements and remote options",
-  "Generous PTO and paid holidays",
-  "Tuition reimbursement for continuing education",
-  "Professional licensing support and exam preparation",
-]
 
 const Career = () => {
   const [formData, setFormData] = useState({
@@ -91,6 +29,24 @@ const Career = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [openings, setOpenings] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchOpenings = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/jobs")
+        const data = await res.json()
+        setOpenings(data)
+      } catch (error) {
+        console.error("Error fetching jobs:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOpenings()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target
@@ -271,47 +227,59 @@ const Career = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 max-w-5xl mx-auto">
-          {openings.map((opening, index) => (
-            <div
-              key={index}
-              className="p-8 bg-muted/30 hover:bg-muted/50 hover-lift transition-all duration-300 border-l-4 border-primary"
-              style={{
-                animation: `fade-in-up 0.5s ease-out ${index * 0.1}s both`,
-              }}
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">{opening.title}</h3>
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Briefcase className="h-4 w-4" />
-                      {opening.department}
-                    </span>
-                    <span>{opening.location}</span>
-                    <span>{opening.type}</span>
-                    <span className="text-primary font-semibold">{opening.salary}</span>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading job openings...</p>
+          </div>
+        ) : openings.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No job openings available at the moment.</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-6 max-w-5xl mx-auto">
+              {openings.map((opening, index) => (
+                <div
+                  key={opening._id}
+                  className="p-8 bg-muted/30 hover:bg-muted/50 hover-lift transition-all duration-300 border-l-4 border-primary"
+                  style={{
+                    animation: `fade-in-up 0.5s ease-out ${index * 0.1}s both`,
+                  }}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2">{opening.title}</h3>
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Briefcase className="h-4 w-4" />
+                          {opening.department}
+                        </span>
+                        <span>{opening.location}</span>
+                        <span>{opening.type}</span>
+                        <span className="text-primary font-semibold">{opening.salary}</span>
+                      </div>
+                    </div>
+                    <a href="#apply">
+                      <Button variant="hero">Apply Now</Button>
+                    </a>
                   </div>
+                  <p className="text-muted-foreground">{opening.description}</p>
                 </div>
-                <a href="#apply">
-                  <Button variant="hero">Apply Now</Button>
-                </a>
-              </div>
-              <p className="text-muted-foreground">{opening.description}</p>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground mb-4">
-            Don't see the right position? We're always looking for talented engineers.
-          </p>
-          <a href="#apply">
-            <Button variant="outline" size="lg">
-              Submit General Application
-            </Button>
-          </a>
-        </div>
+            <div className="text-center mt-12">
+              <p className="text-muted-foreground mb-4">
+                Don't see the right position? We're always looking for talented engineers.
+              </p>
+              <a href="#apply">
+                <Button variant="outline" size="lg">
+                  Submit General Application
+                </Button>
+              </a>
+            </div>
+          </>
+        )}
       </section>
 
       {/* Benefits */}
@@ -326,7 +294,16 @@ const Career = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            {benefits.map((benefit, index) => (
+            {[
+              "Competitive salary and performance bonuses",
+              "Comprehensive health insurance (medical, dental, vision)",
+              "401(k) retirement plan with company match",
+              "Professional development and training programs",
+              "Flexible work arrangements and remote options",
+              "Generous PTO and paid holidays",
+              "Tuition reimbursement for continuing education",
+              "Professional licensing support and exam preparation",
+            ].map((benefit, index) => (
               <div
                 key={index}
                 className="flex items-center gap-3 p-4 bg-background"

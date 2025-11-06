@@ -13,6 +13,7 @@ const AdminStats = () => {
     blogs: 0,
     messages: 0,
     applications: 0,
+    jobs: 0,
   })
   const [loading, setLoading] = useState(true)
 
@@ -24,7 +25,6 @@ const AdminStats = () => {
           if (!res.ok) return []
           const data = await res.json()
           if (Array.isArray(data)) return data
-          // if response like { projects: [...] } or { data: [...] }
           return Object.values(data).find(Array.isArray) || []
         } catch {
           return []
@@ -32,11 +32,12 @@ const AdminStats = () => {
       }
 
       try {
-        const [projects, blogs, messages, applications] = await Promise.all([
+        const [projects, blogs, messages, applications, jobs] = await Promise.all([
           safeFetch("http://localhost:5000/api/projects"),
           safeFetch("http://localhost:5000/api/blogs"),
           safeFetch("http://localhost:5000/api/contact/all"),
           safeFetch("http://localhost:5000/api/career/all"),
+          safeFetch("http://localhost:5000/api/jobs"),
         ])
 
         setStats({
@@ -44,6 +45,7 @@ const AdminStats = () => {
           blogs: blogs.length,
           messages: messages.length,
           applications: applications.length,
+          jobs: jobs.length,
         })
       } catch (error) {
         console.error("Error fetching stats:", error)
@@ -58,6 +60,7 @@ const AdminStats = () => {
   const statCards = [
     { label: "Total Projects", value: stats.projects, icon: Briefcase, color: "bg-blue-500/10" },
     { label: "Total Blogs", value: stats.blogs, icon: FileText, color: "bg-green-500/10" },
+    { label: "Job Openings", value: stats.jobs, icon: Briefcase, color: "bg-pink-500/10" },
     { label: "Contact Messages", value: stats.messages, icon: Mail, color: "bg-orange-500/10" },
     { label: "Job Applications", value: stats.applications, icon: BarChart3, color: "bg-purple-500/10" },
   ]

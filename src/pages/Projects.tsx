@@ -44,8 +44,7 @@ const Projects = () => {
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
-  const getImageURL = (imagePath) =>
-  imagePath ? `${BASE_URL}${imagePath}` : "/placeholder.svg"
+  const getImageURL = (imagePath) => (imagePath ? `${BASE_URL}${imagePath}` : "/placeholder.svg")
 
   return (
     <div className="min-h-screen">
@@ -63,7 +62,7 @@ const Projects = () => {
           <Breadcrumbs items={[{ label: "Projects", url: "/projects" }]} />
 
           <p className="text-primary text-sm uppercase tracking-widest">Our Work</p>
-          <h1 className="text-5xl md:text-7xl font-bold">Projects Portfolio</h1>
+          <h1 className="text-5xl md:text-7xl font-bold text-secondary">Projects Portfolio</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Showcasing excellence across commercial, industrial, infrastructure, and residential projects.
           </p>
@@ -71,21 +70,25 @@ const Projects = () => {
       </section>
 
       {/* Filter Categories */}
-      <section className="py-12 container-fluid border-b border-border/50">
+      <section className="py-12 container-fluid border-b border-border/50 bg-card">
         <div className="space-y-6">
           {/* Category Filter */}
           <div>
-            <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase">Category</h3>
+            <h3 className="text-sm font-semibold mb-3 text-secondary uppercase">Category</h3>
             <div className="flex flex-wrap gap-3">
               {categories.map((category) => (
                 <Button
                   key={category}
-                  variant={activeCategory === category ? "hero" : "outline"}
                   onClick={() => {
                     setActiveCategory(category)
                     handleFilterChange()
                   }}
-                  className="min-w-[120px]"
+                  variant={activeCategory === category ? "default" : "outline"}
+                  className={`min-w-[120px] ${
+                    activeCategory === category
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "border-border hover:bg-background"
+                  }`}
                 >
                   {category}
                 </Button>
@@ -95,17 +98,22 @@ const Projects = () => {
 
           {/* Location Filter */}
           <div>
-            <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase">Location</h3>
+            <h3 className="text-sm font-semibold mb-3 text-secondary uppercase">Location</h3>
             <div className="flex flex-wrap gap-3">
               {locations.map((location) => (
                 <Button
                   key={location}
-                  variant={activeLocation === location ? "hero" : "outline"}
                   onClick={() => {
                     setActiveLocation(location)
                     handleFilterChange()
                   }}
+                  variant={activeLocation === location ? "default" : "outline"}
                   size="sm"
+                  className={
+                    activeLocation === location
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "border-border"
+                  }
                 >
                   {location}
                 </Button>
@@ -115,17 +123,20 @@ const Projects = () => {
 
           {/* Year Filter */}
           <div>
-            <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase">Year</h3>
+            <h3 className="text-sm font-semibold mb-3 text-secondary uppercase">Year</h3>
             <div className="flex flex-wrap gap-3">
               {years.map((year) => (
                 <Button
                   key={year}
-                  variant={activeYear === year ? "hero" : "outline"}
                   onClick={() => {
                     setActiveYear(year)
                     handleFilterChange()
                   }}
+                  variant={activeYear === year ? "default" : "outline"}
                   size="sm"
+                  className={
+                    activeYear === year ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "border-border"
+                  }
                 >
                   {year}
                 </Button>
@@ -178,7 +189,6 @@ const Projects = () => {
                         src={getImageURL(project.imagePath || project.image)}
                         alt={project.title}
                         className="w-full h-[650px] object-cover transition-transform duration-700 group-hover:scale-105"
-                        // className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
                     </div>
@@ -211,6 +221,7 @@ const Projects = () => {
                   variant="outline"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
+                  className="border-border"
                 >
                   Previous
                 </Button>
@@ -218,9 +229,12 @@ const Projects = () => {
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <Button
                     key={i + 1}
-                    variant={currentPage === i + 1 ? "hero" : "outline"}
+                    variant={currentPage === i + 1 ? "default" : "outline"}
                     onClick={() => setCurrentPage(i + 1)}
                     size="sm"
+                    className={
+                      currentPage === i + 1 ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "border-border"
+                    }
                   >
                     {i + 1}
                   </Button>
@@ -230,6 +244,7 @@ const Projects = () => {
                   variant="outline"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
+                  className="border-border"
                 >
                   Next
                 </Button>
